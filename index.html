@@ -7,7 +7,8 @@
 <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe-master.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 <style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #0e3a5e; font-family: system-ui, sans-serif; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: system-ui, sans-serif; }
+  .a-enter-vr, .a-enter-ar { display: none !important; }
   #aviso {
     position: fixed; left: 16px; right: 16px; bottom: 24px; z-index: 10;
     background: rgba(14,58,94,.88); color: #fff; border: 3px solid #f27824;
@@ -36,11 +37,11 @@
     <!-- Suda sale de la hoja hacia el lector -->
     <a-entity id="sale" position="0 -0.05 0" scale="0.001 0.001 0.001">
       <a-entity id="flota">
-        <a-image src="#suda" width="0.82" height="1.0"
+        <a-image src="#suda" width="0.49" height="0.6"
                  material="transparent: true; alphaTest: 0.05; side: double"
                  animation__saludo="property: rotation; from: 0 0 -4; to: 0 0 4; dir: alternate; loop: true; dur: 900; easing: easeInOutSine"></a-image>
       </a-entity>
-      <a-image id="globoEnt" src="#globo" width="0.9" height="0.33" position="0 0.72 0.02"
+      <a-image id="globoEnt" src="#globo" width="0.55" height="0.2" position="0 0.43 0.02"
                material="transparent: true; alphaTest: 0.05; opacity: 0"></a-image>
     </a-entity>
   </a-entity>
@@ -57,9 +58,9 @@
     aviso.classList.add('oculto');
     // aparece desde la hoja
     sale.setAttribute('animation__pop', 'property: scale; from: 0.001 0.001 0.001; to: 1 1 1; dur: 700; easing: easeOutBack');
-    sale.setAttribute('animation__z', 'property: position; from: 0 -0.05 0; to: 0 0.02 0.3; dur: 700; easing: easeOutQuad');
+    sale.setAttribute('animation__z', 'property: position; from: 0 -0.05 0; to: 0 0 0.25; dur: 700; easing: easeOutQuad');
     // flota
-    flota.setAttribute('animation__flota', 'property: position; from: 0 0 0; to: 0 0.05 0; dir: alternate; loop: true; dur: 1400; easing: easeInOutSine; delay: 700');
+    flota.setAttribute('animation__flota', 'property: position; from: 0 0 0; to: 0 0.03 0; dir: alternate; loop: true; dur: 1400; easing: easeInOutSine; delay: 700');
     // globo de diálogo
     globo.setAttribute('animation__globo', 'property: material.opacity; from: 0; to: 1; dur: 500; delay: 800');
   });
