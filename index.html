@@ -19,7 +19,7 @@
 </style>
 </head>
 <body>
-<div id="aviso">Apunta la cámara a la portada del almanaque</div>
+<div id="aviso">Apunta la cámara a la portada del calendario</div>
 
 <a-scene
   mindar-image="imageTargetSrc: ./portada.mind; uiScanning: no; filterMinCF: 0.0001; filterBeta: 0.001"
@@ -39,8 +39,10 @@
     <!-- Suda sale de la hoja hacia el lector -->
     <a-entity id="sale" position="0 -0.05 0" scale="0.001 0.001 0.001">
       <a-entity id="flota">
-        <a-gltf-model src="#suda3d" scale="0.316 0.316 0.316"
+        <a-entity id="giro">
+        <a-gltf-model id="modelo" src="#suda3d" scale="0.316 0.316 0.316"
                  animation__gira="property: rotation; from: 0 -20 0; to: 0 20 0; dir: alternate; loop: true; dur: 2200; easing: easeInOutSine"></a-gltf-model>
+        </a-entity>
       </a-entity>
       <a-image id="globoEnt" src="#globo" width="0.55" height="0.2" position="0 0.43 0.02"
                material="transparent: true; alphaTest: 0.05; opacity: 0"></a-image>
@@ -56,7 +58,9 @@
   const aviso = document.querySelector('#aviso');
 
   ancla.addEventListener('targetFound', () => {
-    aviso.classList.add('oculto');
+    aviso.textContent = 'Desliza el dedo sobre Suda para girarlo';
+    aviso.classList.remove('oculto');
+    clearTimeout(window._t); window._t = setTimeout(() => aviso.classList.add('oculto'), 3500);
     // aparece desde la hoja
     sale.setAttribute('animation__pop', 'property: scale; from: 0.001 0.001 0.001; to: 1 1 1; dur: 700; easing: easeOutBack');
     sale.setAttribute('animation__z', 'property: position; from: 0 -0.05 0; to: 0 0 0.25; dur: 700; easing: easeOutQuad');
@@ -67,6 +71,8 @@
   });
 
   ancla.addEventListener('targetLost', () => {
+    clearTimeout(window._t);
+    aviso.textContent = 'Apunta la cámara a la portada del calendario';
     aviso.classList.remove('oculto');
     sale.removeAttribute('animation__pop');
     sale.removeAttribute('animation__z');
@@ -74,6 +80,45 @@
     sale.setAttribute('position', '0 -0.05 0');
     globo.removeAttribute('animation__globo');
     globo.setAttribute('material', 'opacity', 0);
+  });
+
+  // Girar a Suda con el dedo (o con el mouse)
+  const giro = document.querySelector('#giro');
+  const modelo = document.querySelector('#modelo');
+  let ultimo = null, tocado = false;
+  const SENS = 0.012;
+  function inicio(x, y) {
+    ultimo = { x, y };
+    if (!tocado) {            // al primer toque se detiene el giro automático
+      tocado = true;
+      modelo.removeAttribute('animation__gira');
+      modelo.object3D.rotation.set(0, 0, 0);
+    }
+  }
+  function mover(x, y) {
+    if (!ultimo || !giro.object3D) return;
+    const dx = x - ultimo.x, dy = y - ultimo.y;
+    ultimo = { x, y };
+    const o = giro.object3D;
+    const qy = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx * SENS);
+    const qx = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy * SENS);
+    o.quaternion.premultiply(qy).premultiply(qx);
+  }
+  function fin() { ultimo = null; }
+
+  window.addEventListener('touchstart', e => { if (e.touches.length === 1) inicio(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+  window.addEventListener('touchmove', e => { if (e.touches.length === 1) { e.preventDefault(); mover(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+  window.addEventListener('touchend', fin);
+  window.addEventListener('mousedown', e => inicio(e.clientX, e.clientY));
+  window.addEventListener('mousemove', e => { if (e.buttons) mover(e.clientX, e.clientY); });
+  window.addEventListener('mouseup', fin);
+
+  // Doble toque: vuelve a la posición inicial
+  let ultimoToque = 0;
+  window.addEventListener('touchend', () => {
+    const ahora = Date.now();
+    if (ahora - ultimoToque < 300) giro.object3D.quaternion.identity();
+    ultimoToque = ahora;
   });
 </script>
 </body>
