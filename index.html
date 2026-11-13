@@ -27,19 +27,20 @@
   vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
 
   <a-assets>
-    <img id="suda" src="./suda.png" crossorigin="anonymous">
+    <a-asset-item id="suda3d" src="./suda.glb"></a-asset-item>
     <img id="globo" src="./globo.png" crossorigin="anonymous">
   </a-assets>
 
   <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <a-entity light="type: ambient; intensity: 1.2"></a-entity>
+  <a-entity light="type: directional; intensity: 2" position="0.5 1 2"></a-entity>
 
   <a-entity id="ancla" mindar-image-target="targetIndex: 0">
     <!-- Suda sale de la hoja hacia el lector -->
     <a-entity id="sale" position="0 -0.05 0" scale="0.001 0.001 0.001">
       <a-entity id="flota">
-        <a-image src="#suda" width="0.49" height="0.6"
-                 material="transparent: true; alphaTest: 0.05; side: double"
-                 animation__saludo="property: rotation; from: 0 0 -4; to: 0 0 4; dir: alternate; loop: true; dur: 900; easing: easeInOutSine"></a-image>
+        <a-gltf-model src="#suda3d" scale="0.316 0.316 0.316"
+                 animation__gira="property: rotation; from: 0 -20 0; to: 0 20 0; dir: alternate; loop: true; dur: 2200; easing: easeInOutSine"></a-gltf-model>
       </a-entity>
       <a-image id="globoEnt" src="#globo" width="0.55" height="0.2" position="0 0.43 0.02"
                material="transparent: true; alphaTest: 0.05; opacity: 0"></a-image>
